@@ -1,0 +1,954 @@
+<!doctype html>
+<html lang="so">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+</head>
+<body>
+<title>eLacag Merchant Rewards</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: one product page. Hero with live totals, a two-phone purchase demo, a simulated trading day, the merchant's own calculator, then the money path. */
+:root{
+  --bg:#FFFFFF; --surface:#FFFFFF; --mint:#DBECFF; --mint-2:#C6E0FF;
+  --ink:#0F1E2E; --ink-2:#4A5D70; --ink-3:#6B7E90; --line:#D3E2EF;
+  --brand:#1F6FC2; --brand-deep:#DBECFF; --on-brand:#0B2540; --sky:#DBECFF;
+  --gold:#E9A82B; --gold-ink:#7A4E00; --gold-soft:#FCF0D6;
+  --frame:#1A2A3C; --shadow:0 18px 40px -22px rgba(15,30,46,.35);
+  --display:'Plus Jakarta Sans', 'Segoe UI', Roboto, Arial, sans-serif;
+  --mono:'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0A121C; --surface:#101C2A; --mint:#142538; --mint-2:#1A3048;
+  --ink:#E6EFF8; --ink-2:#A7B8CA; --ink-3:#8092A6; --line:#22344A;
+  --brand:#5AAAF2; --brand-deep:#DBECFF; --on-brand:#0B2540; --sky:#DBECFF;
+  --gold:#F2B83F; --gold-ink:#FFD68A; --gold-soft:#2B2312;
+  --frame:#000000; --shadow:0 18px 40px -22px rgba(0,0,0,.8); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0A121C; --surface:#101C2A; --mint:#142538; --mint-2:#1A3048;
+  --ink:#E6EFF8; --ink-2:#A7B8CA; --ink-3:#8092A6; --line:#22344A;
+  --brand:#5AAAF2; --brand-deep:#DBECFF; --on-brand:#0B2540; --sky:#DBECFF;
+  --gold:#F2B83F; --gold-ink:#FFD68A; --gold-soft:#2B2312;
+  --frame:#000000; --shadow:0 18px 40px -22px rgba(0,0,0,.8); color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--display);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.02em}
+p{margin:0}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--brand)}
+.muted{color:var(--ink-2)}
+button{font-family:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+/* top bar */
+.top{border-bottom:1px solid var(--line);background:var(--surface)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700}
+.logo{width:36px;height:36px;border-radius:10px;background:var(--brand-deep);color:var(--on-brand);display:grid;place-items:center;font-weight:800;font-size:14px}
+.brand small{display:block;font-weight:500;color:var(--ink-3);font-size:12px;line-height:1.2}
+.topright{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.lang{display:inline-flex;background:transparent;border:1px solid var(--line);border-radius:999px;padding:3px}
+.lang button{border:0;background:transparent;color:var(--brand);font-weight:700;font-size:13px;padding:6px 12px;border-radius:999px}
+.lang button[aria-pressed=true]{background:var(--brand-deep);color:var(--on-brand)}
+.pill{font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px;background:var(--mint);color:var(--brand)}
+
+/* hero */
+.hero .wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center;padding-block:56px 40px}
+.hero h1{font-size:clamp(34px,5vw,58px);line-height:1.04;font-weight:800}
+.hero h1 em{font-style:normal;color:var(--brand)}
+.hero .lede{font-size:19px;color:var(--ink-2);max-width:56ch;margin-top:18px}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.btn{border:0;border-radius:12px;padding:14px 20px;font-size:16px;font-weight:700;display:inline-flex;align-items:center;gap:10px}
+.btn-primary{background:var(--brand-deep);color:var(--on-brand)}
+.btn-primary:hover{filter:brightness(1.1)}
+.btn-ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.btn-ghost:hover{border-color:var(--brand)}
+.earn{background:transparent;color:var(--ink);border:1px solid var(--line);border-radius:24px;padding:32px;position:relative}
+.earn .lbl{font-size:13px;font-weight:600;color:var(--brand);letter-spacing:.06em;text-transform:uppercase}
+.earn .big{font-size:clamp(44px,6vw,68px);font-weight:600;line-height:1.05;margin-top:6px;color:var(--ink)}
+.earn .row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
+.earn .row div span{display:block;font-size:13px;color:var(--ink-2)}
+.earn .row div b{font-size:24px;font-weight:600}
+.earn .foot{font-size:13px;color:var(--ink-2);margin-top:18px}
+
+section.block{padding-block:56px}
+.head{display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap;margin-bottom:28px}
+.head h2{font-size:clamp(26px,3.4vw,38px);font-weight:800;margin-top:6px}
+.head p{max-width:60ch}
+
+/* demo */
+.demo{display:grid;grid-template-columns:300px 1fr 300px;gap:32px;align-items:start}
+.phone{background:var(--frame);border-radius:44px;padding:10px;box-shadow:var(--shadow)}
+.screen{background:#F6F9FC;color:#0F1E2E;border-radius:36px;height:660px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.status{display:flex;justify-content:space-between;font-size:12px;font-weight:600;padding:12px 22px 4px;color:#0F1E2E}
+.app-top{display:flex;justify-content:space-between;align-items:center;padding:8px 16px}
+.app-top .b{display:flex;gap:8px;align-items:center;font-weight:700;font-size:14px}
+.app-top .b i{width:28px;height:28px;border-radius:8px;background:#DBECFF;color:#0B2540;font-style:normal;font-weight:800;font-size:11px;display:grid;place-items:center}
+.app-top span{font-size:11px;color:#5B6E80}
+.tabs{display:grid;grid-template-columns:1fr 1fr;margin:4px 14px 10px;background:#fff;border-radius:12px;padding:4px;font-size:13px;text-align:center}
+.tabs div{padding:7px;border-radius:9px;color:#33465A}
+.tabs .on{background:#E3F0FC;color:#1F6FC2;font-weight:600}
+.body{padding:0 14px;display:flex;flex-direction:column;gap:10px;flex:1;min-height:0}
+.hello{font-weight:700;font-size:17px}
+.card{background:#DBECFF;color:#0B2540;border-radius:16px;padding:14px 16px;position:relative}
+.card small{font-size:12px;opacity:.85}
+.card .amt{font-size:28px;font-weight:600;font-family:var(--mono);margin:2px 0}
+.card .sub{font-size:12px;opacity:.85}
+.tile{background:#fff;border:1px solid #DCE7F2;border-radius:14px;padding:10px 12px;font-size:13px}
+.tile .r{display:flex;justify-content:space-between;gap:8px}
+.tile .r b{font-family:var(--mono);font-weight:600}
+.green{color:#1F6FC2}
+.goldtxt{color:#9A6200}
+.navbar{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;font-size:12px;color:#3A4D60;border-top:1px solid #DCE7F2;padding:10px 0 14px;background:#fff;margin-top:auto}
+.notif{position:absolute;left:10px;right:10px;top:40px;background:#fff;border-radius:16px;padding:12px 14px;box-shadow:0 12px 28px -10px rgba(0,0,0,.35);font-size:13px;transform:translateY(-140%);transition:transform .5s cubic-bezier(.2,.8,.2,1);z-index:5;display:flex;gap:10px;align-items:center}
+.notif.show{transform:translateY(0)}
+.notif i{width:34px;height:34px;border-radius:10px;background:#DBECFF;color:#0B2540;display:grid;place-items:center;font-style:normal;font-weight:800;font-size:12px;flex:none}
+.basket{max-height:236px;overflow:hidden;display:flex;flex-direction:column;gap:2px;font-size:12.5px}
+.basket .r{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px dashed #E2EBF4}
+.basket .r b{font-family:var(--mono);font-weight:500}
+.total{display:flex;justify-content:space-between;font-weight:700;font-size:15px;padding-top:6px}
+.paybtn{background:#DBECFF;color:#0B2540;border-radius:12px;text-align:center;padding:11px;font-weight:700;font-size:14px}
+.pin{display:flex;gap:10px;justify-content:center;padding:6px 0}
+.pin span{width:12px;height:12px;border-radius:50%;border:2px solid #5BB8F5;transition:background .15s}
+.pin span.f{background:#5BB8F5}
+.ok{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:18px 0 8px}
+.ok .tick{width:64px;height:64px;border-radius:50%;background:#DBECFF;display:grid;place-items:center}
+.reward-tile{background:#FFF5DE;border:1px solid #F2D79A;border-radius:14px;padding:10px 12px;font-size:13px;transition:box-shadow .3s}
+.reward-tile.flash{box-shadow:0 0 0 4px rgba(233,168,43,.45)}
+.reward-tile .r{display:flex;justify-content:space-between}
+.reward-tile b{font-family:var(--mono);color:#7A4E00}
+.incoming{display:flex;align-items:center;gap:8px;font-size:13px;color:#1F6FC2;font-weight:600}
+.dot{width:10px;height:10px;border-radius:50%;background:#DBECFF;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+.coin{position:absolute;width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFE3A1,#E9A82B 60%,#B97A0B);color:#5B3A00;font-weight:800;font-size:12px;display:grid;place-items:center;font-family:var(--mono);z-index:6;pointer-events:none;box-shadow:0 6px 14px -4px rgba(0,0,0,.4)}
+.plus{position:absolute;right:18px;font-family:var(--mono);font-weight:600;color:#9A6200;font-size:22px;opacity:0;z-index:7}
+.plus.go{animation:rise 1.6s ease-out forwards}
+@keyframes rise{0%{opacity:0;transform:translateY(10px)}20%{opacity:1}100%{opacity:0;transform:translateY(-40px)}}
+
+.mid{display:flex;flex-direction:column;gap:16px;min-width:0}
+.steps{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
+.steps li{display:grid;grid-template-columns:34px 1fr;gap:12px;padding:12px 14px;border-radius:14px;border:1px solid transparent;transition:background .3s,border-color .3s,opacity .3s;opacity:.55}
+.steps li .n{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--mint);color:var(--brand);font-weight:800;font-size:14px}
+.steps li b{display:block;font-size:16px}
+.steps li span{font-size:14px;color:var(--ink-2)}
+.steps li.on{opacity:1;background:var(--surface);border-color:var(--line);box-shadow:var(--shadow)}
+.steps li.done{opacity:1}
+.steps li.done .n{background:var(--brand-deep);color:var(--on-brand)}
+.controls{display:flex;gap:10px;flex-wrap:wrap}
+.ledger{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px 20px;transition:opacity .4s}
+.ledger h3{font-size:15px;font-weight:700;margin-bottom:10px}
+.ledger .r{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid var(--line);font-size:15px}
+.ledger .r:last-child{border-bottom:0}
+.ledger .r b{font-family:var(--mono);font-weight:600}
+.ledger .hl{color:var(--gold-ink);background:var(--gold-soft);margin:6px -10px 0;padding:10px;border-radius:10px;border:0}
+.ledger .hl b{font-size:20px}
+
+/* day sim */
+.day{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:24px;min-width:0}
+.clockrow{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.clock{font-family:var(--mono);font-size:30px;font-weight:600}
+.bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:14px 0 22px}
+.bar i{display:block;height:100%;width:0;background:var(--brand)}
+.counters{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.counters div{background:var(--bg);border-radius:14px;padding:14px}
+.counters span{display:block;font-size:13px;color:var(--ink-2)}
+.counters b{font-family:var(--mono);font-size:22px;font-weight:600}
+.counters .g b{color:var(--gold-ink)}
+.feed{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+.feed .r{display:grid;grid-template-columns:auto 1fr auto auto;gap:12px;align-items:center;padding:9px 12px;border-radius:12px;background:var(--bg);font-size:14px;animation:slide .35s ease-out}
+.feed .av{width:30px;height:30px;border-radius:50%;background:var(--mint-2);color:var(--brand);display:grid;place-items:center;font-weight:700;font-size:12px}
+.feed .amt{font-family:var(--mono)}
+.feed .rw{font-family:var(--mono);color:var(--gold-ink);font-weight:600}
+.feed .empty{color:var(--ink-3);font-size:14px;padding:12px}
+@keyframes slide{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+
+/* calculator */
+.calc{display:grid;grid-template-columns:.9fr 1.1fr;gap:24px}
+.field{display:flex;flex-direction:column;gap:8px;padding:14px 0;border-bottom:1px solid var(--line)}
+.field:last-child{border-bottom:0}
+.field label{font-weight:600;font-size:15px;display:flex;justify-content:space-between;gap:12px}
+.field label output{font-family:var(--mono);color:var(--brand);font-weight:600}
+.field .hint{font-size:13px;color:var(--ink-3)}
+input[type=range]{width:100%;accent-color:var(--brand)}
+input[type=text],input[type=number]{width:100%;font:inherit;font-size:16px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.presets{display:flex;gap:8px;flex-wrap:wrap}
+.presets button{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600}
+.presets button[aria-pressed=true]{background:var(--brand-deep);color:var(--on-brand);border-color:var(--brand-deep)}
+.results{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
+.results div{background:var(--bg);border-radius:14px;padding:14px}
+.results span{display:block;font-size:13px;color:var(--ink-2)}
+.results b{font-family:var(--mono);font-size:24px;font-weight:600}
+.results .main{grid-column:1/-1;background:var(--gold-soft)}
+.results .main b{font-size:clamp(34px,4.5vw,48px);color:var(--gold-ink)}
+.chartbox{overflow-x:auto}
+.chart text{fill:var(--ink-3);font-family:var(--mono);font-size:11px}
+.chart .axis{stroke:var(--line)}
+.chart .barr{fill:var(--sky);stroke:var(--brand);stroke-width:1}
+.chart .potential{stroke:var(--gold);stroke-dasharray:5 5;stroke-width:2;fill:none}
+.chart .lblv{fill:var(--ink-2)}
+.breakdown{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+.breakdown td{padding:8px 0;border-bottom:1px solid var(--line)}
+.breakdown td:last-child{text-align:right;font-family:var(--mono)}
+.breakdown tr.k td{font-weight:700;color:var(--gold-ink)}
+
+/* flow */
+.flow{display:grid;grid-template-columns:repeat(6,1fr);gap:0;align-items:stretch}
+.node{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;position:relative;margin-right:22px}
+.node:last-child{margin-right:0}
+.node:not(:last-child)::after{content:"";position:absolute;right:-17px;top:50%;width:12px;height:12px;border-top:2px solid var(--brand);border-right:2px solid var(--brand);transform:translateY(-50%) rotate(45deg)}
+.node .who{font-weight:700;font-size:15px}
+.node .what{font-size:13px;color:var(--ink-2);margin-top:4px}
+.node .tag{display:inline-block;margin-top:10px;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--mint);color:var(--brand)}
+.node .tag.gold{background:var(--gold-soft);color:var(--gold-ink)}
+.node.hl{border-color:var(--brand);box-shadow:var(--shadow)}
+
+.notes{font-size:14px;color:var(--ink-2);display:grid;grid-template-columns:repeat(2,1fr);gap:8px 32px;padding:0;margin:0;list-style:none}
+.notes li{padding-left:16px;position:relative}
+.notes li::before{content:"";position:absolute;left:0;top:.65em;width:6px;height:6px;border-radius:50%;background:var(--brand)}
+footer{border-top:1px solid var(--line);padding-block:28px;color:var(--ink-3);font-size:13px}
+
+@media (max-width:1060px){
+  .demo{grid-template-columns:1fr 1fr}
+  .mid{grid-column:1/-1;order:-1}
+  .phone{max-width:320px;width:100%;justify-self:center}
+  .flow{grid-template-columns:repeat(3,1fr);row-gap:22px}
+  .node:nth-child(3){margin-right:0}.node:nth-child(3)::after{display:none}
+}
+@media (max-width:820px){
+  .hero .wrap,.day,.calc{grid-template-columns:1fr}
+  .notes{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  .demo{grid-template-columns:1fr}
+  .flow{grid-template-columns:1fr}
+  .node{margin-right:0;margin-bottom:22px}
+  .node:last-child{margin-bottom:0}
+  .node:not(:last-child)::after,.node:nth-child(3)::after{display:block;right:50%;top:auto;bottom:-17px;transform:translateX(50%) rotate(135deg)}
+  .counters,.results{grid-template-columns:1fr 1fr}
+  .counters div:last-child{grid-column:1/-1}
+  .screen{height:660px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><div class="logo">SX</div><div>eLacag<small>by SomNexus</small></div></div>
+    <div class="topright">
+      <span class="pill">Merchant demo · <span data-bind="name">Hayat Supermarket</span></span>
+      <div class="lang" id="langSwitch" role="group" aria-label="Language">
+        <button type="button" data-lang="so" aria-pressed="true">Soomaali</button>
+        <button type="button" data-lang="en" aria-pressed="false">English</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <p class="eyebrow">For merchants in Somalia</p>
+      <h1 style="margin-top:12px">Your customers spend remittance money. <em>eLacag pays you a share of it.</em></h1>
+      <p class="lede">Every time a customer pays <span data-bind="name">Hayat Supermarket</span> with money that arrived through eLacag, you earn 0.40% back. You pay no fees to accept it, and your customers pay nothing to spend it.</p>
+      <div class="cta">
+        <button class="btn btn-primary" id="heroPlay" type="button">▶ Watch Ali’s $200 purchase</button>
+        <button class="btn btn-ghost" id="heroCalc" type="button">Enter your own numbers</button>
+      </div>
+    </div>
+    <aside class="earn" aria-live="polite">
+      <p class="lbl">Your monthly eLacag rewards</p>
+      <p class="big num" id="heroMonthly">$3,840</p>
+      <div class="row">
+        <div><span>Per year</span><b class="num" id="heroYear">$46,080</b></div>
+        <div><span>Per $200 basket</span><b class="num" id="heroBasket">$0.80</b></div>
+      </div>
+      <p class="foot" id="heroFoot">Based on $1,200,000 monthly sales, 80% funded by remittances, all paid with eLacag.</p>
+    </aside>
+  </div>
+</section>
+
+<section class="block" id="demo" style="padding-top:24px">
+  <div class="wrap">
+    <div class="head">
+      <div><p class="eyebrow">Live demo</p><h2>One purchase, start to finish</h2></div>
+      <p class="muted">Ali’s brother Ahmed sends him $200 from Minneapolis. Ali buys his family’s groceries at <span data-bind="name">Hayat Supermarket</span>. Watch both phones.</p>
+    </div>
+    <div class="demo">
+      <!-- Ali's phone -->
+      <div class="phone" aria-label="Ali's eLacag app">
+        <div class="screen" id="aliScreen">
+          <div class="status"><span>9:41</span><span>▮▮▮ 4G</span></div>
+          <div class="notif" id="aliNotif"><i>SX</i><div><b>Money received · $200.00</b><br><span style="color:#5B6E80">From Ahmed in Minneapolis, via a partner money transfer company</span></div></div>
+          <div class="app-top"><div class="b"><i>SX</i>eLacag</div><span>English · EN</span></div>
+          <div class="tabs"><div class="on">Personal</div><div>Business</div></div>
+          <div class="body" id="aliBody"></div>
+          <div class="navbar"><span>⌂ Home</span><span>◷ History</span><span>? Help</span></div>
+        </div>
+      </div>
+
+      <div class="mid">
+        <ol class="steps" id="steps">
+          <li data-s="1"><span class="n">1</span><div><b>Ahmed sends $200</b><span>It lands in Ali’s eLacag wallet in seconds. The money transfer company pays eLacag 1.5%, so Ali pays nothing to receive it.</span></div></li>
+          <li data-s="2"><span class="n">2</span><div><b>Ali pays at the till</b><span>He scans the store’s QR code and confirms with his PIN. It costs him nothing.</span></div></li>
+          <li data-s="3"><span class="n">3</span><div><b>The store receives $200</b><span>The full amount arrives instantly. There is no merchant fee.</span></div></li>
+          <li data-s="4"><span class="n">4</span><div><b>eLacag pays the store $0.80</b><span>That is 0.40% of the $200, paid from eLacag’s 1.5% fee.</span></div></li>
+        </ol>
+        <div class="controls">
+          <button class="btn btn-primary" id="play" type="button">▶ Play</button>
+          <button class="btn btn-ghost" id="next" type="button">Next step</button>
+          <button class="btn btn-ghost" id="reset" type="button">↺ Reset</button>
+        </div>
+        <div class="ledger" id="ledger">
+          <h3>Where the money goes on this $200</h3>
+          <div class="r"><span>Ali pays to receive and spend</span><b>$0.00</b></div>
+          <div class="r"><span>The store pays to accept</span><b>$0.00</b></div>
+          <div class="r"><span>The transfer company pays eLacag (1.5%)</span><b>$3.00</b></div>
+          <div class="r hl"><span>eLacag pays the store (0.40%)</span><b id="ledgerReward">$0.80</b></div>
+        </div>
+      </div>
+
+      <!-- Merchant phone -->
+      <div class="phone" aria-label="Merchant eLacag business app">
+        <div class="screen" id="shopScreen">
+          <div class="status"><span>9:41</span><span>▮▮▮ 4G</span></div>
+          <div class="app-top"><div class="b"><i>SX</i>eLacag</div><span>English · EN</span></div>
+          <div class="tabs"><div>Personal</div><div class="on">Business</div></div>
+          <div class="body">
+            <div class="hello"><span data-bind="name">Hayat Supermarket</span> ✓</div>
+            <div class="card"><small>Sales today</small><div class="amt" id="shopSales">$6,412.00</div><div class="sub" id="shopCount">48 payments · no fees</div></div>
+            <div class="reward-tile" id="rewardTile">
+              <div class="r"><span>eLacag rewards today</span><b id="shopReward">$25.65</b></div>
+              <div class="r" style="margin-top:4px;font-size:12px;color:#7A5A1A"><span>Paid to you at 0.40%</span><span>Auto-credited</span></div>
+            </div>
+            <div style="font-weight:700;font-size:15px;margin-top:4px">Latest payment</div>
+            <div class="tile" id="shopLatest">
+              <div class="r"><span>Hodan A.</span><b>$12.50</b></div>
+              <div class="green" style="font-size:12px">✓ Received · 9:38</div>
+            </div>
+            <div class="tile"><div class="r"><span>Pay suppliers</span><span class="green" style="font-weight:600">Free →</span></div></div>
+            <div class="tile"><div class="r"><span>Transfer to bank</span><span class="green" style="font-weight:600">→</span></div></div>
+          </div>
+          <span class="plus" id="plus" style="top:236px">+$0.80</span>
+          <div class="navbar"><span>⌂ Home</span><span>◷ History</span><span>? Help</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block" style="background:var(--surface);border-block:1px solid var(--line)">
+  <div class="wrap">
+    <div class="head">
+      <div><p class="eyebrow">Simulation</p><h2>A full trading day, in 25 seconds</h2></div>
+      <p class="muted" id="dayIntro">Payments arrive at the pace of a store selling $40,000 a day. Each one paid with eLacag earns 0.40%.</p>
+    </div>
+    <div class="day">
+      <div class="panel">
+        <div class="clockrow">
+          <div><span class="muted" style="font-size:13px">Store clock</span><div class="clock" id="clock">07:00</div></div>
+          <button class="btn btn-primary" id="dayBtn" type="button">▶ Open the store</button>
+        </div>
+        <div class="bar"><i id="dayBar"></i></div>
+        <div class="counters" aria-live="polite">
+          <div><span>eLacag payments</span><b id="cCount">0</b></div>
+          <div><span>Paid with eLacag</span><b id="cValue">$0</b></div>
+          <div class="g"><span>Rewards earned</span><b id="cReward">$0.00</b></div>
+        </div>
+        <p class="muted" style="font-size:13px;margin-top:14px" id="dayNote">At the end of the day: about $128 in rewards. Over 30 days, that is $3,840.</p>
+      </div>
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><b>Payments coming in</b><span class="muted" style="font-size:13px">Customer · amount · your reward</span></div>
+        <div class="feed" id="feed"><div class="empty">Press “Open the store” to start the day.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="calc">
+  <div class="wrap">
+    <div class="head">
+      <div><p class="eyebrow">Your numbers</p><h2>How much can your store earn?</h2></div>
+      <p class="muted">Change any value. Everything on this page updates, including the demo and the simulation.</p>
+    </div>
+    <div class="calc">
+      <div class="panel">
+        <div class="field">
+          <label for="inName">Business name</label>
+          <input type="text" id="inName" value="Hayat Supermarket" maxlength="40">
+        </div>
+        <div class="field">
+          <label for="inSales">Monthly sales (USD) <output id="oSales">$1,200,000</output></label>
+          <input type="range" id="inSales" min="50000" max="3000000" step="10000" value="1200000">
+          <div class="presets" id="presets">
+            <button type="button" data-v="500000">$500K</button>
+            <button type="button" data-v="1000000">$1M</button>
+            <button type="button" data-v="1200000" aria-pressed="true">$1.2M</button>
+            <button type="button" data-v="2000000">$2M</button>
+          </div>
+        </div>
+        <div class="field">
+          <label for="inRem">Sales paid with remittance money <output id="oRem">80%</output></label>
+          <input type="range" id="inRem" min="0" max="100" step="1" value="80">
+          <span class="hint">The share of your customers’ spending that originally came from family abroad.</span>
+        </div>
+        <div class="field">
+          <label for="inAdopt">Of those customers, paying with eLacag <output id="oAdopt">100%</output></label>
+          <input type="range" id="inAdopt" min="0" max="100" step="5" value="100">
+          <span class="hint">100% is full potential. Customers move over as their families start sending through eLacag partners.</span>
+        </div>
+        <div class="field">
+          <label for="inRamp">Year one: share paying with eLacag in month 1 <output id="oRamp">25%</output></label>
+          <input type="range" id="inRamp" min="5" max="100" step="5" value="25">
+          <span class="hint">The chart grows from this level to your target over six months.</span>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="results" aria-live="polite">
+          <div class="main"><span>Your eLacag rewards per month</span><b id="rMonthly">$3,840</b></div>
+          <div><span>Per year</span><b id="rYear">$46,080</b></div>
+          <div><span>Per day</span><b id="rDay">$128</b></div>
+          <div><span>Year one, with growth</span><b id="rYearOne">$37,440</b></div>
+        </div>
+        <div class="chartbox"><svg class="chart" id="chart" viewBox="0 0 560 230" width="100%" role="img" aria-label="Monthly rewards in year one"></svg></div>
+        <p class="muted" style="font-size:13px;margin-top:6px"><span style="color:var(--brand);font-weight:700">□</span> Monthly reward in year one &nbsp; <span style="color:var(--gold);font-weight:700">- -</span> Full potential</p>
+        <table class="breakdown" aria-label="How the monthly reward is calculated">
+          <tr><td>Monthly sales</td><td id="bSales">$1,200,000</td></tr>
+          <tr><td>Paid with remittance money</td><td id="bRem">$960,000</td></tr>
+          <tr><td>Of that, paid with eLacag</td><td id="bEl">$960,000</td></tr>
+          <tr><td>eLacag fee, paid by transfer companies (1.5%)</td><td id="bFee">$14,400</td></tr>
+          <tr class="k"><td>Your share (0.40%)</td><td id="bShare">$3,840</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block" style="background:var(--surface);border-block:1px solid var(--line)">
+  <div class="wrap">
+    <div class="head">
+      <div><p class="eyebrow">How it works</p><h2>How the money moves</h2></div>
+      <p class="muted">The transfer company pays the 1.5%. Everyone inside Somalia uses eLacag free, and the money keeps circulating.</p>
+    </div>
+    <div class="flow">
+      <div class="node"><p class="who">Family abroad</p><p class="what">Ahmed sends $200 from Minneapolis</p><span class="tag">Pays as usual</span></div>
+      <div class="node"><p class="who">Transfer company</p><p class="what">A licensed partner sends to eLacag</p><span class="tag">Pays eLacag 1.5%</span></div>
+      <div class="node hl"><p class="who">eLacag</p><p class="what">Bank-sponsored wallet on BPC SmartVista, with ID checks and monitoring</p><span class="tag">Credits Ali in seconds</span></div>
+      <div class="node"><p class="who">Ali</p><p class="what">Receives, spends and sends money to family</p><span class="tag">Free for Ali</span></div>
+      <div class="node hl"><p class="who" data-bind="name">Hayat Supermarket</p><p class="what">Gets $200 in full, plus a reward</p><span class="tag gold">+0.40% reward</span></div>
+      <div class="node"><p class="who">Suppliers and bank</p><p class="what">The store pays suppliers in eLacag or moves money to its bank</p><span class="tag">Free supplier payments</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" style="padding-bottom:32px">
+  <div class="wrap">
+    <p class="eyebrow" style="margin-bottom:14px">What these numbers assume</p>
+    <ul class="notes">
+      <li>The reward is 0.40% of each purchase paid with money that arrived through eLacag. It comes out of the 1.5% eLacag charges transfer companies.</li>
+      <li>Cash sales, and money that did not arrive through eLacag, do not earn a reward.</li>
+      <li>The remittance share and eLacag use are your estimates. Change them above to match your store.</li>
+      <li>A month is counted as 30 trading days. All figures are in US dollars.</li>
+      <li>eLacag is in development. Phase I, the smartphone wallet on BPC SmartVista, is nearing completion.</li>
+      <li>Final reward terms are set in the merchant agreement.</li>
+    </ul>
+  </div>
+</section>
+
+<footer><div class="wrap">eLacag by SomNexus (SX) · Interactive merchant demo. Names and the purchase are illustrations.</div></footer>
+
+<script>
+(function(){
+  // ---- Deal terms (edit here) ----
+  var SX_FEE = 0.015;        // eLacag fee charged to transfer companies
+  var MERCHANT_RATE = 0.004; // merchant reward: 40 basis points
+  var DAYS = 30;
+  var RAMP_MONTHS = 6;
+
+  var state = {name:'Hayat Supermarket', sales:1200000, rem:0.80, adopt:1.00, ramp:0.25};
+  var $ = function(id){return document.getElementById(id)};
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- Language ----
+  // Static page text: English as written in the HTML -> Somali.
+  var SO = {
+    'by SomNexus':'waxaa sameeyay SomNexus',
+    'Merchant demo ·':'Tusaale ganacsade ·',
+    'For merchants in Somalia':'Ganacsatada Soomaaliya',
+    'Your customers spend remittance money.':'Macaamiishaadu waxay isticmaalaan lacagta xawaaladda.',
+    'eLacag pays you a share of it.':'eLacag ayaa qayb kaa siinaysa.',
+    'Every time a customer pays':'Mar kasta oo macmiil wax ka iibsado',
+    'with money that arrived through eLacag, you earn 0.40% back. You pay no fees to accept it, and your customers pay nothing to spend it.':'isagoo isticmaalaya lacag ku timid eLacag, waxaad helaysaa 0.40% abaal-marin ah. Adigu khidmad kuma bixinaysid aqbalaaddeeda, macaamiishaaduna waxba kuma bixinayaan isticmaalkeeda.',
+    'Enter your own numbers':'Geli tirooyinkaaga',
+    'Your monthly eLacag rewards':'Abaal-marinta eLacag ee bishii',
+    'Per year':'Sannadkii',
+    'Per $200 basket':'Iib kasta oo $200 ah',
+    'Live demo':'Tusaale toos ah',
+    'One purchase, start to finish':'Hal iib, bilow ilaa dhammaad',
+    'Ali’s brother Ahmed sends him $200 from Minneapolis. Ali buys his family’s groceries at':'Axmed, walaalka Cali, ayaa uga soo diray $200 Minneapolis. Cali wuxuu cuntada qoyskiisa ka iibsanayaa',
+    '. Watch both phones.':'. Daawo labada taleefan.',
+    'Money received · $200.00':'Lacag ayaa kuu timid · $200.00',
+    'From Ahmed in Minneapolis, via a partner money transfer company':'Waxaa soo diray Axmed oo jooga Minneapolis, iyadoo loo marayo shirkad xawaalad oo aan la shaqeyno',
+    'English · EN':'Af-Soomaali · SO',
+    'Personal':'Shakhsi',
+    'Business':'Ganacsi',
+    '⌂ Home':'⌂ Hoyga',
+    '◷ History':'◷ Taariikhda',
+    '? Help':'? Caawimaad',
+    'Ahmed sends $200':'Axmed wuxuu diraa $200',
+    'It lands in Ali’s eLacag wallet in seconds. The money transfer company pays eLacag 1.5%, so Ali pays nothing to receive it.':'Waxay gaartaa boorsada eLacag ee Cali dhowr ilbiriqsi gudahood. Shirkadda xawaaladdu waxay eLacag siisaa 1.5%, sidaa darteed Cali waxba kuma bixiyo helitaankeeda.',
+    'Ali pays at the till':'Cali wuxuu lacagta ku bixiyaa miiska',
+    'He scans the store’s QR code and confirms with his PIN. It costs him nothing.':'Wuxuu sawiraa koodhka QR ee dukaanka, kadibna wuxuu ku xaqiijiyaa PIN-kiisa. Waxba kama jarmaan.',
+    'The store receives $200':'Dukaanku wuxuu helaa $200',
+    'The full amount arrives instantly. There is no merchant fee.':'Lacagta oo dhan isla markiiba way timaadaa. Ganacsaduhu khidmad ma bixiyo.',
+    'eLacag pays the store $0.80':'eLacag waxay dukaanka siisaa $0.80',
+    'That is 0.40% of the $200, paid from eLacag’s 1.5% fee.':'Taasi waa 0.40% ee $200, waxaana laga bixiyaa khidmadda 1.5% ee eLacag.',
+    'Next step':'Tallaabada xigta',
+    '↺ Reset':'↺ Dib u bilow',
+    'Where the money goes on this $200':'Halka ay $200-kan u socdaan',
+    'Ali pays to receive and spend':'Waxa Cali ku bixiyo helitaanka iyo isticmaalka',
+    'The store pays to accept':'Waxa dukaanku ku bixiyo aqbalaadda',
+    'The transfer company pays eLacag (1.5%)':'Shirkadda xawaaladdu waxay eLacag siisaa (1.5%)',
+    'eLacag pays the store (0.40%)':'eLacag waxay dukaanka siisaa (0.40%)',
+    'Sales today':'Iibka maanta',
+    'eLacag rewards today':'Abaal-marinta eLacag ee maanta',
+    'Paid to you at 0.40%':'Laguu siiyay 0.40%',
+    'Auto-credited':'Si toos ah ayaa loogu daray',
+    'Latest payment':'Lacag-bixintii ugu dambeysay',
+    'Pay suppliers':'Bixi alaab-keenayaasha',
+    'Free →':'Bilaash →',
+    'Transfer to bank':'U wareeji bangiga',
+    'Simulation':'Jilitaan',
+    'A full trading day, in 25 seconds':'Maalin ganacsi oo dhan, 25 ilbiriqsi gudahood',
+    'Store clock':'Saacadda dukaanka',
+    'eLacag payments':'Lacag-bixinta eLacag',
+    'Paid with eLacag':'Lagu bixiyay eLacag',
+    'Rewards earned':'Abaal-marinta la helay',
+    'Payments coming in':'Lacag-bixinta soo socota',
+    'Customer · amount · your reward':'Macmiil · qaddar · abaal-marintaada',
+    'Your numbers':'Tirooyinkaaga',
+    'How much can your store earn?':'Intee ayuu dukaankaagu kasban karaa?',
+    'Change any value. Everything on this page updates, including the demo and the simulation.':'Beddel qiime kasta. Wax kasta oo boggan ku jira wuu is-beddelayaa, oo ay ku jiraan tusaalaha iyo jilitaanka.',
+    'Business name':'Magaca ganacsiga',
+    'Monthly sales (USD)':'Iibka bishii (USD)',
+    'Sales paid with remittance money':'Iibka lagu bixiyo lacag xawaalad',
+    'The share of your customers’ spending that originally came from family abroad.':'Qaybta kharashka macaamiishaada ee asal ahaan ka timid qoys dibadda jooga.',
+    'Of those customers, paying with eLacag':'Macaamiishaas, inta ku bixisa eLacag',
+    '100% is full potential. Customers move over as their families start sending through eLacag partners.':'100% waa awoodda buuxda. Macaamiishu way u soo guuraan marka qoysaskoodu bilaabaan inay lacagta ku soo diraan la-hawlgalayaasha eLacag.',
+    'Year one: share paying with eLacag in month 1':'Sannadka 1aad: inta ku bixisa eLacag bisha 1aad',
+    'The chart grows from this level to your target over six months.':'Jaantusku wuxuu ka kordhayaa heerkan ilaa hadafkaaga muddo lix bilood ah.',
+    'Your eLacag rewards per month':'Abaal-marintaada eLacag ee bishii',
+    'Per day':'Maalintii',
+    'Year one, with growth':'Sannadka 1aad, iyadoo koraysa',
+    'Monthly reward in year one':'Abaal-marinta bishii, sannadka 1aad',
+    'Full potential':'Awoodda buuxda',
+    'Monthly sales':'Iibka bishii',
+    'Paid with remittance money':'Lagu bixiyay lacag xawaalad',
+    'Of that, paid with eLacag':'Taas, inta lagu bixiyay eLacag',
+    'eLacag fee, paid by transfer companies (1.5%)':'Khidmadda eLacag, oo ay bixiyaan shirkadaha xawaaladda (1.5%)',
+    'Your share (0.40%)':'Qaybtaada (0.40%)',
+    'How it works':'Sida ay u shaqeyso',
+    'How the money moves':'Sida lacagtu u socoto',
+    'The transfer company pays the 1.5%. Everyone inside Somalia uses eLacag free, and the money keeps circulating.':'Shirkadda xawaaladda ayaa bixisa 1.5%. Qof kasta oo Soomaaliya jooga wuxuu eLacag u isticmaalaa bilaash, lacagtuna way sii wareegtaa.',
+    'Family abroad':'Qoyska dibadda',
+    'Ahmed sends $200 from Minneapolis':'Axmed wuxuu ka soo diraa $200 Minneapolis',
+    'Pays as usual':'Sidii caadiga ahayd ayuu u bixiyaa',
+    'Transfer company':'Shirkadda xawaaladda',
+    'A licensed partner sends to eLacag':'La-hawlgale shati haysta ayaa u soo dira eLacag',
+    'Pays eLacag 1.5%':'eLacag wuxuu siiyaa 1.5%',
+    'Bank-sponsored wallet on BPC SmartVista, with ID checks and monitoring':'Boorsad uu bangi taageero oo ku dhisan BPC SmartVista, leh hubinta aqoonsiga iyo la-socodka',
+    'Credits Ali in seconds':'Cali wuxuu helaa ilbiriqsiyo gudahood',
+    'Ali':'Cali',
+    'Receives, spends and sends money to family':'Wuu helaa, wuu isticmaalaa, wuuna u diraa qoyska',
+    'Free for Ali':'Bilaash u ah Cali',
+    'Gets $200 in full, plus a reward':'Wuxuu helaa $200 oo dhan, iyo abaal-marin',
+    '+0.40% reward':'+0.40% abaal-marin',
+    'Suppliers and bank':'Alaab-keenayaasha iyo bangiga',
+    'The store pays suppliers in eLacag or moves money to its bank':'Dukaanku wuxuu alaab-keenayaasha ku bixiyaa eLacag ama lacagta u wareejiyaa bangigiisa',
+    'Free supplier payments':'Bixinta alaab-keenayaasha waa bilaash',
+    'What these numbers assume':'Waxa tirooyinkan ku salaysan yihiin',
+    'The reward is 0.40% of each purchase paid with money that arrived through eLacag. It comes out of the 1.5% eLacag charges transfer companies.':'Abaal-marintu waa 0.40% iib kasta oo lagu bixiyo lacag ku timid eLacag. Waxaa laga bixiyaa 1.5%-ka eLacag ka qaadato shirkadaha xawaaladda.',
+    'Cash sales, and money that did not arrive through eLacag, do not earn a reward.':'Iibka kaashka ah iyo lacagta aan ku iman eLacag abaal-marin ma helaan.',
+    'The remittance share and eLacag use are your estimates. Change them above to match your store.':'Qaybta xawaaladda iyo isticmaalka eLacag waa qiyaastaada. Kor ka beddel si ay ugu habboonaadaan dukaankaaga.',
+    'A month is counted as 30 trading days. All figures are in US dollars.':'Bishii waxaa loo xisaabiyaa 30 maalmood oo ganacsi. Tirooyinka oo dhan waa doollarka Mareykanka.',
+    'eLacag is in development. Phase I, the smartphone wallet on BPC SmartVista, is nearing completion.':'eLacag weli waa la dhisayaa. Wejiga 1aad, boorsada taleefannada casriga ah ee ku dhisan BPC SmartVista, wuu ku dhow yahay dhammaystir.',
+    'Final reward terms are set in the merchant agreement.':'Shuruudaha kama dambaysta ah ee abaal-marinta waxaa lagu qeexaa heshiiska ganacsadaha.',
+    'eLacag by SomNexus (SX) · Interactive merchant demo. Names and the purchase are illustrations.':'eLacag by SomNexus (SX) · Tusaale ganacsade oo la tijaabin karo. Magacyada iyo iibku waa tusaale.'
+  };
+
+  // Text the script writes.
+  var TX = {
+    en:{
+      ali:'Ali', ahmed:'Ahmed', hello:'Hello, Ali', balance:'Available balance', walletSub:'USD · eLacag wallet',
+      quick:'Quick send', shop:'Shop', scan:'⌗ Scan QR', send:'➤ Send money', speak:'🎙 Speak to pay · “Send $50 to Hooyo”',
+      payTo:'Pay {n}', total:'Total', feeYou:'Fee for you', pinHint:'Enter PIN to confirm', payBtn:'Pay $200.00',
+      paid:'Paid $200.00', to:'to {n}', ref:'Ref SX-20481 · Fee $0.00', ahmedCity:'Ahmed (Minneapolis)', recv941:'Received · 9:41', groceries:'Groceries · 9:43',
+      payments:'{c} payments · no fees', recv938:'✓ Received · 9:38', aliM:'Ali M.', recv943:'✓ Received · 9:43 · Fee $0.00', incoming:'Incoming payment…',
+      play:'▶ Play', playing:'▶ Playing…', replay:'▶ Replay', heroPlay:'▶ Watch Ali’s $200 purchase',
+      open:'▶ Open the store', stop:'■ Stop', again:'↺ Run the day again', closed:'22:00 · closed',
+      empty:'Press “Open the store” to start the day.', none:'No eLacag payments at these settings.',
+      foot:'Based on {s} monthly sales, {r}% funded by remittances, {a} paid with eLacag.', all:'all',
+      dayIntro:'Payments arrive at the pace of a store selling {d} a day. Each one paid with eLacag earns 0.40%.',
+      dayNote:'At the end of the day: about {d} in rewards. Over 30 days, that is {m}.',
+      yourStore:'Your store', chart:'Monthly rewards in year one', month:'Month',
+      basket:['Rice, 25 kg','Meat, 4 kg','Milk powder','Diapers','Household and soap','Fresh produce','Cooking oil, 5 L','Tea and spices','Sugar, 10 kg','Pasta, 10 packs'],
+      names:['Amina H.','Abdirahman Y.','Hodan A.','Yusuf M.','Khadra O.','Mohamed F.','Farhiya I.','Ismail N.','Sahra D.','Abdullahi K.','Ifrah S.','Bashir G.','Nimco W.','Hassan J.','Ubah R.','Omar L.','Fadumo E.','Liban C.']
+    },
+    so:{
+      ali:'Cali', ahmed:'Axmed', hello:'Soo dhowow, Cali', balance:'Haraaga lacagta', walletSub:'USD · boorsada eLacag',
+      quick:'Dir si degdeg ah', shop:'Dukaan', scan:'⌗ Sawir QR', send:'➤ Dir lacag', speak:'🎙 Ku hadal oo bixi · “U dir Hooyo $50”',
+      payTo:'U bixi {n}', total:'Wadarta', feeYou:'Khidmaddaada', pinHint:'Geli PIN-kaaga si aad u xaqiijiso', payBtn:'Bixi $200.00',
+      paid:'Waa la bixiyay $200.00', to:'Loo bixiyay {n}', ref:'Tix. SX-20481 · Khidmad $0.00', ahmedCity:'Axmed (Minneapolis)', recv941:'La helay · 9:41', groceries:'Cunto · 9:43',
+      payments:'{c} lacag-bixin · khidmad la’aan', recv938:'✓ La helay · 9:38', aliM:'Cali M.', recv943:'✓ La helay · 9:43 · Khidmad $0.00', incoming:'Lacag ayaa soo socota…',
+      play:'▶ Daar', playing:'▶ Waa socotaa…', replay:'▶ Mar kale daawo', heroPlay:'▶ Daawo iibka $200 ee Cali',
+      open:'▶ Fur dukaanka', stop:'■ Jooji', again:'↺ Maalinta mar kale bilow', closed:'22:00 · waa xiran yahay',
+      empty:'Riix “Fur dukaanka” si maalintu u bilaabato.', none:'Dejintan wax lacag-bixin eLacag ah kuma jiraan.',
+      foot:'Ku salaysan {s} oo iib bishii ah, {r}% ka yimid xawaalad, {a} lagu bixiyay eLacag.', all:'dhammaan',
+      dayIntro:'Lacag-bixintu waxay u imanaysaa sida dukaan maalintii iibiya {d}. Mid kasta oo lagu bixiyo eLacag wuxuu keenaa 0.40%.',
+      dayNote:'Dhammaadka maalinta: qiyaastii {d} oo abaal-marin ah. 30 maalmood gudahood, taasi waa {m}.',
+      yourStore:'Dukaankaaga', chart:'Abaal-marinta bishii, sannadka 1aad', month:'Bisha',
+      basket:['Bariis, 25 kg','Hilib, 4 kg','Caano budo','Xafaayado','Alaabta guriga iyo saabuun','Khudaar iyo miro','Saliid cunto, 5 L','Shaah iyo xawaash','Sonkor, 10 kg','Baasto, 10 baakad'],
+      names:['Aamina H.','Cabdiraxmaan Y.','Hodan A.','Yuusuf M.','Khadra O.','Maxamed F.','Farxiya I.','Ismaaciil N.','Sahra D.','Cabdullaahi K.','Ifraax S.','Bashiir G.','Nimco W.','Xasan J.','Ubax R.','Cumar L.','Faadumo E.','Liibaan C.']
+    }
+  };
+  var LANG = 'so';
+  try { var saved = localStorage.getItem('elacag-lang'); if (saved === 'en' || saved === 'so') LANG = saved; } catch(e){}
+  function T(k, vars){
+    var s = TX[LANG][k];
+    if (vars) Object.keys(vars).forEach(function(v){ s = s.replace('{'+v+'}', vars[v]) });
+    return s;
+  }
+
+  // Capture static text nodes once, before any script output.
+  var staticNodes = [];
+  (function collect(root){
+    var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null), n;
+    while ((n = w.nextNode())){
+      var p = n.parentNode && n.parentNode.nodeName;
+      if (p === 'SCRIPT' || p === 'STYLE' || p === 'TITLE') continue;
+      var key = n.nodeValue.trim();
+      if (key && Object.prototype.hasOwnProperty.call(SO, key)) staticNodes.push({node:n, en:n.nodeValue, key:key});
+    }
+  })(document.body);
+
+  function usd(v, dp){
+    dp = dp === undefined ? 0 : dp;
+    return '$' + v.toLocaleString('en-US',{minimumFractionDigits:dp, maximumFractionDigits:dp});
+  }
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function storeName(){return state.name || T('yourStore')}
+
+  function calc(){
+    var remVal = state.sales * state.rem;
+    var el = remVal * state.adopt;
+    var monthly = el * MERCHANT_RATE;
+    var months = [], yearOne = 0;
+    for (var m=1; m<=12; m++){
+      var f = Math.min(1, state.ramp + (1 - state.ramp) * (m-1)/(RAMP_MONTHS-1));
+      var v = monthly * f; months.push(v); yearOne += v;
+    }
+    return {remVal:remVal, el:el, fee:el*SX_FEE, monthly:monthly, year:monthly*12, day:monthly/DAYS, months:months, yearOne:yearOne};
+  }
+
+  function render(){
+    var r = calc();
+    document.querySelectorAll('[data-bind="name"]').forEach(function(n){n.textContent = storeName()});
+    $('oSales').textContent = usd(state.sales);
+    $('oRem').textContent = Math.round(state.rem*100)+'%';
+    $('oAdopt').textContent = Math.round(state.adopt*100)+'%';
+    $('oRamp').textContent = Math.round(state.ramp*100)+'%';
+    $('rMonthly').textContent = usd(r.monthly);
+    $('rYear').textContent = usd(r.year);
+    $('rDay').textContent = usd(r.day);
+    $('rYearOne').textContent = usd(r.yearOne);
+    $('heroMonthly').textContent = usd(r.monthly);
+    $('heroYear').textContent = usd(r.year);
+    $('heroFoot').textContent = T('foot', {s:usd(state.sales), r:Math.round(state.rem*100), a:(state.adopt===1 ? T('all') : Math.round(state.adopt*100)+'%')});
+    $('bSales').textContent = usd(state.sales);
+    $('bRem').textContent = usd(r.remVal);
+    $('bEl').textContent = usd(r.el);
+    $('bFee').textContent = usd(r.fee);
+    $('bShare').textContent = usd(r.monthly);
+    $('dayIntro').textContent = T('dayIntro', {d:usd(state.sales/DAYS)});
+    $('dayNote').textContent = T('dayNote', {d:usd(r.day), m:usd(r.monthly)});
+    document.querySelectorAll('#presets button').forEach(function(b){b.setAttribute('aria-pressed', String(+b.dataset.v === state.sales))});
+    drawChart(r);
+  }
+
+  function niceMax(v){
+    if (v <= 0) return 100;
+    var p = Math.pow(10, Math.floor(Math.log10(v))), n = v / p;
+    var s = n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10;
+    return s * p;
+  }
+  function drawChart(r){
+    var W=560,H=230,L=58,R=12,T0=14,B=28, svg=$('chart');
+    svg.setAttribute('aria-label', T('chart'));
+    var max = niceMax(r.monthly * 1.08 || 1);
+    var y = function(v){return T0 + (H-T0-B) * (1 - v/max)};
+    var bw = (W-L-R)/12, out = '', mLetter = LANG === 'so' ? 'B' : 'M';
+    for (var i=0;i<=4;i++){
+      var tv = max*i/4, ty = y(tv);
+      out += '<line class="axis" x1="'+L+'" x2="'+(W-R)+'" y1="'+ty+'" y2="'+ty+'"/>';
+      out += '<text x="'+(L-8)+'" y="'+(ty+4)+'" text-anchor="end">'+usd(tv)+'</text>';
+    }
+    r.months.forEach(function(v,i){
+      var x = L + i*bw + bw*0.18, w = bw*0.64, top = y(v);
+      out += '<rect class="barr" x="'+x.toFixed(1)+'" y="'+top.toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+Math.max(0,(y(0)-top)).toFixed(1)+'" rx="3"><title>'+T('month')+' '+(i+1)+': '+usd(v)+'</title></rect>';
+      out += '<text x="'+(x+w/2).toFixed(1)+'" y="'+(H-10)+'" text-anchor="middle">'+mLetter+(i+1)+'</text>';
+    });
+    var py = y(r.monthly);
+    out += '<line class="potential" x1="'+L+'" x2="'+(W-R)+'" y1="'+py+'" y2="'+py+'"/>';
+    svg.innerHTML = out;
+  }
+
+  // ---- inputs ----
+  $('inName').addEventListener('input', function(e){state.name = e.target.value.trim(); render(); refreshPhones()});
+  $('inSales').addEventListener('input', function(e){state.sales = +e.target.value; render(); resetDay()});
+  $('inRem').addEventListener('input', function(e){state.rem = e.target.value/100; render(); resetDay()});
+  $('inAdopt').addEventListener('input', function(e){state.adopt = e.target.value/100; render(); resetDay()});
+  $('inRamp').addEventListener('input', function(e){state.ramp = e.target.value/100; render()});
+  document.querySelectorAll('#presets button').forEach(function(b){
+    b.addEventListener('click', function(){state.sales = +b.dataset.v; $('inSales').value = state.sales; render(); resetDay()});
+  });
+  $('heroCalc').addEventListener('click', function(){$('calc').scrollIntoView({behavior: reduce?'auto':'smooth'})});
+  $('heroPlay').addEventListener('click', function(){$('demo').scrollIntoView({behavior: reduce?'auto':'smooth'}); setTimeout(play, reduce?0:600)});
+
+  // ---- two-phone demo ----
+  var PRICES = [32.00,36.00,24.00,22.25,20.00,18.75,14.50,12.00,11.00,9.50];
+  var BASE = {sales:6412.00, count:48, reward:25.65};
+  var step = 0, timers = [], aliView = 'home', aliBalance = 0, shopState = 'base';
+  function later(fn, ms){timers.push(setTimeout(fn, reduce ? 0 : ms))}
+  function clearTimers(){timers.forEach(clearTimeout); timers = []}
+
+  function countTo(el, from, to, ms, dp){
+    if (reduce){el.textContent = usd(to, dp); return}
+    var t0 = performance.now();
+    (function tick(t){
+      var k = Math.min(1, (t - t0)/ms), e = 1 - Math.pow(1-k, 3);
+      el.textContent = usd(from + (to-from)*e, dp);
+      if (k < 1) requestAnimationFrame(tick);
+    })(t0);
+  }
+  function avatar(letter, label){
+    return '<div><div style="width:38px;height:38px;border-radius:50%;background:#E3F0FC;margin:0 auto 4px;display:grid;place-items:center;color:#1F6FC2;font-weight:700">'+letter+'</div>'+label+'</div>';
+  }
+  function aliHome(bal){
+    aliView = 'home'; aliBalance = bal;
+    $('aliBody').innerHTML =
+      '<div class="hello">'+T('hello')+'</div>'+
+      '<div class="card"><small>'+T('balance')+'</small><div class="amt" id="aliBal">'+usd(bal,2)+'</div><div class="sub">'+T('walletSub')+'</div></div>'+
+      '<div style="font-weight:700;font-size:15px">'+T('quick')+'</div>'+
+      '<div style="display:grid;grid-template-columns:repeat(3,1fr);text-align:center;font-size:12px;gap:6px">'+
+        avatar('H','Hooyo') + avatar(T('shop')[0], T('shop')) + avatar(T('ahmed')[0], T('ahmed')) +
+      '</div>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="tile" style="text-align:center">'+T('scan')+'</div><div class="tile" style="text-align:center">'+T('send')+'</div></div>'+
+      '<div class="tile" style="background:#EAF4FD;border-color:#CFE4F8">'+T('speak')+'</div>';
+  }
+  function aliPay(animate){
+    aliView = 'pay';
+    var items = TX[LANG].basket;
+    var rows = items.map(function(b,i){return '<div class="r"><span>'+b+'</span><b>'+usd(PRICES[i],2)+'</b></div>'}).join('');
+    $('aliBody').innerHTML =
+      '<div class="hello">'+esc(T('payTo',{n:storeName()}))+'</div>'+
+      '<div class="tile"><div class="basket">'+rows+'</div><div class="total"><span>'+T('total')+'</span><span class="num">$200.00</span></div>'+
+      '<div class="r" style="font-size:12px;margin-top:4px"><span class="green">'+T('feeYou')+'</span><span class="green num">$0.00</span></div></div>'+
+      '<div style="text-align:center;font-size:13px;color:#4A5D70">'+T('pinHint')+'</div>'+
+      '<div class="pin" id="pin"><span></span><span></span><span></span><span></span></div>'+
+      '<div class="paybtn">'+T('payBtn')+'</div>';
+    var dots = document.querySelectorAll('#pin span');
+    dots.forEach(function(d,i){ if (animate) later(function(){d.classList.add('f')}, 500 + i*260); else d.classList.add('f') });
+  }
+  function aliDone(){
+    aliView = 'done';
+    $('aliBody').innerHTML =
+      '<div class="ok"><div class="tick"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#0B2540" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>'+
+      '<div style="font-weight:700;font-size:18px">'+T('paid')+'</div><div style="font-size:13px;color:#4A5D70">'+esc(T('to',{n:storeName()}))+'<br>'+T('ref')+'</div></div>'+
+      '<div class="card"><small>'+T('balance')+'</small><div class="amt">$0.00</div><div class="sub">'+T('walletSub')+'</div></div>'+
+      '<div class="tile"><div class="r"><span>'+T('ahmedCity')+'</span><b class="green">+$200.00</b></div><div style="font-size:12px;color:#5B6E80">'+T('recv941')+'</div></div>'+
+      '<div class="tile"><div class="r"><span>'+esc(storeName())+'</span><b>−$200.00</b></div><div style="font-size:12px;color:#5B6E80">'+T('groceries')+'</div></div>';
+  }
+
+  function shopLatest(kind){
+    shopState = kind;
+    var html = kind === 'incoming' ? '<div class="incoming"><span class="dot"></span>'+T('incoming')+'</div>'
+      : kind === 'ali' ? '<div class="r"><span>'+T('aliM')+'</span><b>$200.00</b></div><div class="green" style="font-size:12px">'+T('recv943')+'</div>'
+      : '<div class="r"><span>Hodan A.</span><b>$12.50</b></div><div class="green" style="font-size:12px">'+T('recv938')+'</div>';
+    $('shopLatest').innerHTML = html;
+  }
+  function shopCountText(after){ $('shopCount').textContent = T('payments',{c: after ? BASE.count+1 : BASE.count}) }
+  function shopReset(){
+    $('shopSales').textContent = usd(BASE.sales,2);
+    shopCountText(false);
+    $('shopReward').textContent = usd(BASE.reward,2);
+    shopLatest('base');
+  }
+  function shopAfter(){ $('shopSales').textContent = usd(BASE.sales+200,2); shopCountText(true); shopLatest('ali') }
+
+  function setStep(n){
+    step = n;
+    document.querySelectorAll('#steps li').forEach(function(li){
+      var s = +li.dataset.s;
+      li.classList.toggle('on', s === n);
+      li.classList.toggle('done', s < n || (n === 4 && s === 4));
+    });
+    $('ledger').style.opacity = n >= 4 ? '1' : '.55';
+    if (n === 0){aliHome(0); shopReset(); $('aliNotif').classList.remove('show')}
+    if (n === 1){
+      aliHome(0);
+      later(function(){$('aliNotif').classList.add('show')}, 200);
+      later(function(){var b=$('aliBal'); aliBalance = 200; if(b) countTo(b, 0, 200, 900, 2)}, 700);
+      later(function(){$('aliNotif').classList.remove('show')}, 2600);
+    }
+    if (n === 2){$('aliNotif').classList.remove('show'); aliPay(true)}
+    if (n === 3){
+      aliDone();
+      shopLatest('incoming');
+      later(function(){
+        shopLatest('ali');
+        countTo($('shopSales'), BASE.sales, BASE.sales+200, 800, 2);
+        shopCountText(true);
+      }, 700);
+    }
+    if (n === 4){
+      if ($('shopSales').textContent === usd(BASE.sales,2)) shopAfter();
+      if (aliView !== 'done') aliDone();
+      flyCoin();
+    }
+  }
+
+  function flyCoin(){
+    var screen = $('shopScreen'), tile = $('rewardTile');
+    var rect = screen.getBoundingClientRect(), tr = tile.getBoundingClientRect();
+    var coin = document.createElement('div');
+    coin.className = 'coin'; coin.textContent = '0.80';
+    var endX = tr.left - rect.left + tr.width - 60, endY = tr.top - rect.top + 2;
+    coin.style.left = (rect.width/2 - 22) + 'px'; coin.style.top = (rect.height - 120) + 'px';
+    screen.appendChild(coin);
+    var done = function(){
+      coin.remove();
+      countTo($('shopReward'), BASE.reward, BASE.reward + 0.80, 700, 2);
+      tile.classList.add('flash'); later(function(){tile.classList.remove('flash')}, 900);
+      var p = $('plus'); p.style.top = (endY - 6) + 'px'; p.classList.remove('go'); void p.offsetWidth; p.classList.add('go');
+    };
+    if (reduce || !coin.animate){done(); return}
+    var anim = coin.animate([
+      {transform:'translate(0,0) scale(.4)', opacity:0},
+      {transform:'translate(0,-40px) scale(1.1)', opacity:1, offset:.3},
+      {transform:'translate('+(endX - rect.width/2 + 22)+'px,'+(endY - rect.height + 120)+'px) scale(.8)', opacity:1}
+    ], {duration:1100, easing:'cubic-bezier(.3,.7,.2,1)'});
+    anim.onfinish = done;
+  }
+
+  // Redraw the phones in the current language without replaying animation.
+  function refreshPhones(){
+    if (aliView === 'home') aliHome(aliBalance);
+    else if (aliView === 'pay') aliPay(false);
+    else aliDone();
+    shopLatest(shopState);
+    shopCountText($('shopSales').textContent !== usd(BASE.sales,2));
+  }
+
+  var playing = false;
+  function playLabel(){ $('play').textContent = playing ? T('playing') : (step === 4 ? T('replay') : T('play')) }
+  function play(){
+    clearTimers(); playing = true; playLabel();
+    setStep(0);
+    var t = reduce ? 0 : 400, gap = 3200;
+    [1,2,3,4].forEach(function(s, i){ timers.push(setTimeout(function(){setStep(s)}, reduce ? 0 : t + i*gap)) });
+    timers.push(setTimeout(function(){playing=false; playLabel()}, reduce ? 0 : t + 3*gap + 1800));
+  }
+  $('play').addEventListener('click', play);
+  $('next').addEventListener('click', function(){clearTimers(); playing=false; setStep(step >= 4 ? 1 : step + 1); playLabel()});
+  $('reset').addEventListener('click', function(){clearTimers(); playing=false; setStep(0); playLabel()});
+
+  // ---- trading day simulation ----
+  var DUR = 25000, dayRaf = null, dayRunning = false, dayTx = [], dayDone = false;
+  function seeded(seed){return function(){seed = (seed*16807) % 2147483647; return (seed-1)/2147483646}}
+  function buildDay(){
+    var r = calc(), target = r.el / DAYS, rnd = seeded(20481), list = [], sum = 0;
+    if (target <= 0) return [];
+    while (sum < target){
+      var u = rnd(), a = u < .55 ? 4 + rnd()*26 : u < .85 ? 30 + rnd()*70 : 100 + rnd()*150;
+      a = Math.round(a*4)/4; list.push(a); sum += a;
+    }
+    var k = target / sum; // scale so the day adds up exactly
+    return list.map(function(a){return Math.round(a*k*100)/100});
+  }
+  function fmtClock(f){var mins = 7*60 + Math.floor(f*15*60); var h = Math.floor(mins/60), m = mins%60; return (h<10?'0':'')+h+':'+(m<10?'0':'')+m}
+  function resetDay(){
+    if (dayRaf) cancelAnimationFrame(dayRaf);
+    dayRunning = false; dayDone = false; $('dayBtn').textContent = T('open');
+    $('clock').textContent = '07:00'; $('dayBar').style.width = '0';
+    $('cCount').textContent = '0'; $('cValue').textContent = '$0'; $('cReward').textContent = '$0.00';
+    $('feed').innerHTML = '<div class="empty">'+T('empty')+'</div>';
+  }
+  function runDay(){
+    resetDay(); dayTx = buildDay(); dayRunning = true; $('dayBtn').textContent = T('stop');
+    var shown = 0, value = 0, lastFeed = 0, t0 = performance.now(), feed = $('feed');
+    var names = TX[LANG].names;
+    feed.innerHTML = '';
+    if (!dayTx.length){feed.innerHTML = '<div class="empty">'+T('none')+'</div>'; dayRunning=false; $('dayBtn').textContent=T('open'); return}
+    (function frame(t){
+      var f = reduce ? 1 : Math.min(1, (t - t0)/DUR);
+      var want = Math.floor(f * dayTx.length);
+      if (f === 1) want = dayTx.length;
+      while (shown < want){ value += dayTx[shown]; shown++ }
+      $('clock').textContent = fmtClock(f);
+      $('dayBar').style.width = (f*100) + '%';
+      $('cCount').textContent = shown.toLocaleString('en-US');
+      $('cValue').textContent = usd(value);
+      $('cReward').textContent = usd(value*MERCHANT_RATE, 2);
+      if (shown && (t - lastFeed > 160 || f === 1)){
+        lastFeed = t;
+        var a = dayTx[shown-1], nm = names[(shown*7) % names.length];
+        var row = document.createElement('div'); row.className = 'r';
+        row.innerHTML = '<span class="av">'+nm[0]+'</span><span>'+nm+'</span><span class="amt">'+usd(a,2)+'</span><span class="rw">+'+usd(a*MERCHANT_RATE,2)+'</span>';
+        feed.prepend(row);
+        while (feed.children.length > 7) feed.lastChild.remove();
+      }
+      if (f < 1 && dayRunning){ dayRaf = requestAnimationFrame(frame) }
+      else { dayRunning = false; dayDone = f === 1; $('dayBtn').textContent = dayDone ? T('again') : T('open'); if (dayDone) $('clock').textContent = T('closed') }
+    })(t0);
+  }
+  $('dayBtn').addEventListener('click', function(){
+    if (dayRunning){ dayRunning = false; if (dayRaf) cancelAnimationFrame(dayRaf); $('dayBtn').textContent = T('open'); }
+    else runDay();
+  });
+
+  // ---- language switch ----
+  function applyLang(lang){
+    LANG = lang;
+    try { localStorage.setItem('elacag-lang', lang) } catch(e){}
+    document.documentElement.lang = lang;
+    staticNodes.forEach(function(s){
+      s.node.nodeValue = lang === 'so' ? s.en.replace(s.key, SO[s.key]) : s.en;
+    });
+    document.querySelectorAll('#langSwitch button').forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.lang === lang)) });
+    $('heroPlay').textContent = T('heroPlay');
+    render();
+    refreshPhones();
+    playLabel();
+    if (dayRunning) { $('dayBtn').textContent = T('stop') }
+    else if (dayDone) { $('dayBtn').textContent = T('again'); $('clock').textContent = T('closed') }
+    else resetDay();
+  }
+  document.querySelectorAll('#langSwitch button').forEach(function(b){
+    b.addEventListener('click', function(){ applyLang(b.dataset.lang) });
+  });
+
+  // First view: the purchase already completed; Play replays it.
+  setStep(0);
+  applyLang(LANG);
+  setStep(4);
+  playLabel();
+})();
+</script>
+
+</body>
+</html>
